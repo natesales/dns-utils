@@ -35,7 +35,7 @@ else
   servers=$*
 fi
 
-echo "Testing $servers at $(date)"
+echo "Starting dnsnap at $(date)"
 
 {
   printf "\e[4mServer\e[0m \e[4mLatency\e[0m \e[4mid.server\e[0m \e[4mNSID\e[0m\n"
