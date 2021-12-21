@@ -13,19 +13,20 @@ default_servers="prisoner.iana.org anyns.pch.net 9.9.9.9 1.1.1.1 8.8.8.8 $root_s
 
 # test_server tests a DNS server by hostname or IP
 test_server() {
-  latency=$(ping -c 1 "$1" | tail -1 | awk '{print $4}' | cut -d '/' -f 2)
+  dig_results=$(dig +time=5 +tries=1 +nsid CH id.server TXT @"$1")
+  if echo "$dig_results" | grep -q "no servers could be reached"; then
+    echo "$1 unreachable"
+    return
+  fi
 
-  if [ -z "$latency" ]; then
-    echo "$1 UNREACHABLE"
+  identities=$(echo "$dig_results" | grep -o -P '(?<=").*(?=")')
+  latency=$(echo "$dig_results" | grep -o -P '(?<=time: ).*(?= msec)')
+  nsid=$(echo "$identities" | head -1)
+  id_server=$(echo "$identities" | tail -1)
+  if [ "$nsid" != "$id_server" ]; then
+    echo "$1 ${latency}ms $id_server $nsid"
   else
-    identities=$(dig +nsid CH id.server TXT @"$1" | grep -o -P '(?<=").*(?=")')
-    nsid=$(echo "$identities" | head -1)
-    id_server=$(echo "$identities" | tail -1)
-    if [ "$nsid" != "$id_server" ]; then
-      echo "$1 ${latency}ms $id_server $nsid"
-    else
-      echo "$1 ${latency}ms $id_server"
-    fi
+    echo "$1 ${latency}ms $id_server"
   fi
 }
 
