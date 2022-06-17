@@ -1,6 +1,6 @@
 #!/bin/sh
 # dnsnap.sh "DNS snapshot"
-# https://github.com/natesales/dns-utilities
+# https://github.com/natesales/dns-utils
 #
 # Test the default DNS server list (see $default_servers):
 # curl -sL https://git.io/dnsnap | sh
